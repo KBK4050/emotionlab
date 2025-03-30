@@ -5,4 +5,5 @@ google-auth
 pandas
 deepface
 opencv-python
+opencv-python-headless
 tensorflow
