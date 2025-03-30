@@ -1,9 +1,8 @@
 fastapi==0.82.0
 uvicorn==0.17.6
+deepface==0.0.93
 gspread
+opencv-python-headless==4.8.0.74
 google-auth
-pandas
-deepface
-opencv-python
-opencv-python-headless
+pandas 
 tensorflow
