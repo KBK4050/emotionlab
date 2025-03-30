@@ -5,4 +5,5 @@ gspread
 opencv-python-headless==4.8.0.76
 google-auth
 pandas 
-tensorflow
+tensorflow==2.11.0
+tf-keras
