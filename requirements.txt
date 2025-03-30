@@ -1,2 +1,5 @@
-fastapi
-uvicorn
+fastapi==0.82.0
+uvicorn==0.17.6
+gspread
+google-auth
+pandas
