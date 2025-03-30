@@ -15,7 +15,7 @@ app.include_router(camera_router, prefix="/camera")
 app.include_router(movie_router, prefix="/movie")
 app.include_router(song_router, prefix="/song")
 
-# 👉 아래처럼 추가해 주세요
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+# 아래처럼 추가해 주세요
+#if __name__ == "__main__":
+#    import uvicorn
+#    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
