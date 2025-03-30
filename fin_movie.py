@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 import tensorflow as tf
 import pandas as pd
@@ -9,7 +9,7 @@ import uvicorn
 from sklearn.model_selection import train_test_split
 import re
 
-app = FastAPI(title="영화 감정 분석 API")
+router = APIRouter()
 
 # 데이터 로드 및 전처리
 try:
@@ -75,8 +75,7 @@ emotion_hierarchy = {
     'happy': ['funny', 'exciting'],
     'angry': ['intense', 'action']
 }
-
-@app.get("/predict")
+@router.get("/predict")
 def predict_emotion(
     text: str = Query(..., description="분석할 텍스트 입력", example="가족을 잃은 슬픈 이야기")
 ):
@@ -85,27 +84,27 @@ def predict_emotion(
         # 텍스트 전처리
         processed_text = preprocess_text(text)
         seq = tokenizer.texts_to_sequences([processed_text])
-        padded = pad_sequences(seq, maxlen=100)
-        
+        padded_input = pad_sequences(seq, maxlen=100)
+
         # 예측
-        prediction = model.predict(padded, verbose=0)[0]
+        prediction = model.predict(padded_input, verbose=0)[0]
         emotion_idx = np.argmax(prediction)
         emotion = list(emotion_mapping.keys())[emotion_idx]
         confidence = float(prediction[emotion_idx])
-        
+
         # 추천 영화 선택
         main_emotion_movies = df[df['emotion'] == emotion]
-        
+
         # 주 감정 영화가 3개 미만이면 유사 감정 영화 추가
         if len(main_emotion_movies) < 3:
             for related_emotion in emotion_hierarchy.get(emotion, []):
                 if len(main_emotion_movies) < 3:
                     additional = df[df['emotion'] == related_emotion]
                     main_emotion_movies = pd.concat([main_emotion_movies, additional])
-        
+
         # 최종 추천 (중복 제거)
         recommended = main_emotion_movies.drop_duplicates().sample(min(3, len(main_emotion_movies)))
-        
+
         return {
             "input_text": text,
             "processed_text": processed_text,
@@ -113,12 +112,9 @@ def predict_emotion(
             "confidence": confidence,
             "movies": recommended[['title', 'plot', 'emotion']].to_dict('records')
         }
-        
+
     except Exception as e:
         return {
             "error": "Prediction failed",
             "detail": str(e)
         }
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
