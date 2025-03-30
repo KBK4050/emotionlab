@@ -1,12 +1,14 @@
-from fastapi import FastAPI, Query, HTTPException
-import uvicorn
+from fastapi import APIRouter, Query, HTTPException
+from typing import List, Optional
+from pydantic import BaseModel
+import random
 from typing import List, Optional
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from pydantic import BaseModel
 import random
 
-app = FastAPI(
+router = APIRouter(
     title="AI Music Recommendation API",
     description="Emotion-based music recommendation with AI-powered Spotify search",
     version="1.1.0"
@@ -173,16 +175,14 @@ def recommend_tracks(emotion: str, limit: int = 5) -> List[TrackInfo]:
         print(f"Error searching Spotify: {e}")
         return []
 
-@app.get("/recommend-music", response_model=RecommendationResponse)
+
+@router.get("/recommend-music", response_model=RecommendationResponse)
 async def recommend_music(
     emotion: str = Query(..., description="Emotion for music recommendation", example="happy"),
     limit: int = Query(5, description="Number of tracks to recommend", ge=1, le=10)
 ):
     """
     Get music recommendations based on emotion with AI-powered Spotify search
-    
-    Uses emotion keywords combined with music characteristics (danceability, energy, valence)
-    to find the most suitable tracks on Spotify.
     """
     try:
         tracks = recommend_tracks(emotion, limit)
@@ -195,35 +195,30 @@ async def recommend_music(
             "search_query": generate_search_query(emotion),
             "message": f"AI-powered music recommendations for {emotion} mood"
         }
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/play-emotion-playlist")
+@router.post("/play-emotion-playlist")
 async def play_emotion_playlist(
     emotion: str = Query(..., description="Emotion for playlist", example="happy"),
     shuffle: bool = Query(True, description="Shuffle the playlist")
 ):
     """
     Start playback of an emotion-based playlist on Spotify
-    
-    Creates a dynamic playlist based on the emotion and starts playback on the active device
     """
     try:
-        # Get recommended tracks
-        tracks = recommend_tracks(emotion, 20)  # Larger playlist
-        
+        tracks = recommend_tracks(emotion, 20)
+
         if not tracks:
             raise HTTPException(status_code=404, detail="No suitable tracks found for this emotion")
-        
-        # Get active device
+
         devices = sp.devices()
         active_device = next((d["id"] for d in devices["devices"] if d["is_active"]), None)
-        
+
         if not active_device:
             raise HTTPException(status_code=400, detail="No active Spotify device found")
-        
-        # Start playback
+
         sp.start_playback(
             device_id=active_device,
             uris=[t.uri for t in tracks],
@@ -231,11 +226,10 @@ async def play_emotion_playlist(
             offset={"position": 0},
             position_ms=0
         )
-        
-        # Enable shuffle if requested
+
         if shuffle:
             sp.shuffle(True, device_id=active_device)
-        
+
         return {
             "status": "success",
             "emotion": emotion,
@@ -243,9 +237,6 @@ async def play_emotion_playlist(
             "first_track": tracks[0].name,
             "device": next(d["name"] for d in devices["devices"] if d["is_active"])
         }
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8888)
