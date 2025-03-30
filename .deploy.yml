@@ -1,13 +1,1 @@
-name: emotionlab
-app: python@3.11
-options:
-  ports: "8080"
-  start: uvicorn main:app --host=0.0.0.0 --port=8080
-  env: []
-  buildenv: []
-  packages:
-    - libgl1-mesa-glx
-context:
-  git:
-    url: https://github.com/KBK4050/emotionlab.git
-    branch: main
+
