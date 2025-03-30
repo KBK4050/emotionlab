@@ -3,3 +3,6 @@ uvicorn==0.17.6
 gspread
 google-auth
 pandas
+deepface
+opencv-python
+tensorflow
