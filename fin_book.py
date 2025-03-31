@@ -9,24 +9,21 @@ from typing import Optional
 router = APIRouter()
 
 # Google Sheets 설정
-SHEET_NAME = "emotion_book"
-CREDENTIALS_FILE = "emotionlab-b1cf55707206.json"
+# SHEET_NAME = "emotion_book"
+# CREDENTIALS_FILE = "emotionlab-b1cf55707206.json"
+#google Sheets → CSV 파일로 변경
+CSV_FILE = "books.csv"
 
 class BookRequest(BaseModel):
     emotion: str
 
 def get_books_data():
     """Google 스프레드시트에서 도서 데이터 로드"""
+     """CSV 파일에서 도서 데이터 로드"""
     try:
-        scope = ["https://spreadsheets.google.com/feeds", 
-                "https://www.googleapis.com/auth/drive"]
-        creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scope)
-        client = gspread.authorize(creds)
-        sheet = client.open(SHEET_NAME).sheet1
-        records = sheet.get_all_records()
-        return pd.DataFrame(records)
+         return pd.read_csv(CSV_FILE)
     except Exception as e:
-        print(f"Error loading sheet: {e}")
+        print(f"books.csv 파일을 찾을 수 없습니다.")
         # 실패 시 기본 데이터
         return pd.DataFrame({
             "감정": ["happy", "sad", "neutral", "angry"],
