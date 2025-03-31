@@ -8,11 +8,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from pydantic import BaseModel
 import random
 
-router = APIRouter(
-    title="AI Music Recommendation API",
-    description="Emotion-based music recommendation with AI-powered Spotify search",
-    version="1.1.0"
-)
+router = APIRouter()
 
 # Spotify Setup
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
