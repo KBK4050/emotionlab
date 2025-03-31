@@ -12,24 +12,26 @@ router = APIRouter()
 # SHEET_NAME = "emotion_book"
 # CREDENTIALS_FILE = "emotionlab-b1cf55707206.json"
 #google Sheets → CSV 파일로 변경
+router = APIRouter()
+
 CSV_FILE = "books.csv"
 
 class BookRequest(BaseModel):
     emotion: str
 
 def get_books_data():
-    """Google 스프레드시트에서 도서 데이터 로드"""
-     """CSV 파일에서 도서 데이터 로드"""
+    """CSV 파일에서 도서 데이터 로드"""
     try:
-         return pd.read_csv(CSV_FILE)
-    except Exception as e:
-        print(f"books.csv 파일을 찾을 수 없습니다.")
-        # 실패 시 기본 데이터
+        return pd.read_csv(CSV_FILE)
+    except FileNotFoundError:
+        print("⚠️ books.csv 파일을 찾을 수 없습니다.")
+        # 실패 시 기본 데이터 반환
         return pd.DataFrame({
             "감정": ["happy", "sad", "neutral", "angry"],
             "책 제목": ["행복한 책", "슬픈 책", "중립적인 책", "분노의 책"],
             "작가": ["행복 작가", "슬픔 작가", "중립 작가", "분노 작가"]
         })
+        
 books_df_global = None  # 전역 변수로 선언
  
 @router.on_event("startup")
