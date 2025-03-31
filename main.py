@@ -4,8 +4,12 @@ from fin_camera import router as camera_router
 from fin_movie import router as movie_router
 from fin_song import router as song_router
 
-app = FastAPI()
-
+app = FastAPI(
+    title="Emotion-based Media Recommendation API",
+    description="Get movie, music, and book recommendations based on your emotion!",
+    version="1.1.0"
+)
+ 
 @app.get("/")
 def root():
     return {"message": "EmotionLab API is running!"}
