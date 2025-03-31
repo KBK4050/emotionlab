@@ -33,13 +33,12 @@ def get_books_data():
             "책 제목": ["행복한 책", "슬픈 책", "중립적인 책", "분노의 책"],
             "작가": ["행복 작가", "슬픔 작가", "중립 작가", "분노 작가"]
         })
-
+books_df_global = None  # 전역 변수로 선언
+ 
 @router.on_event("startup")
 async def startup_event():
-    """서버 시작 시 데이터 로드"""
-    router.state.books_df = get_books_data()
-    print("도서 데이터 로드 완료. 샘플 데이터:")
-    print(router.state.books_df.head())
+    global books_df_global
+    books_df_global = get_books_data()
 
 async def recommend_book(
     emotion: str = Query(..., description="감정 종류 (happy, sad, neutral, angry)", example="happy")
