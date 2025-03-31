@@ -1,9 +1,9 @@
-fastapi==0.82.0
-uvicorn==0.17.6
-deepface==0.0.93
-gspread
-opencv-python-headless==4.8.0.76
-google-auth
-pandas 
-tensorflow==2.11.0
-tf-keras
+fastapi==0.82.0                   # FastAPI 서버
+uvicorn==0.17.6                   # FastAPI 실행기
+deepface==0.0.93                  # 얼굴 분석/감정 인식
+gspread                           # Google Sheets 연동용
+opencv-python-headless==4.8.0.76 # 이미지 처리용 (GUI 없는 환경에 적합)
+google-auth                      # Google API 인증용
+pandas                           # 데이터 처리용
+tensorflow==2.19.0               # 최신 DeepFace 호환용 텐서플로우
+tf-keras                         # tensorflow 2.19.0에 필요한 추가 패키지
